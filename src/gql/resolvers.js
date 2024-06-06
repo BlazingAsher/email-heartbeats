@@ -24,14 +24,14 @@ export const resolvers = {
     },
     Mutation: {
         createHeartbeat: async (parent, args, context, info) => {
-            await HeartbeatController.createHeartbeat(args.email_name, args.maximum_interval_seconds, args.matching_criteria);
+            await HeartbeatController.createHeartbeat(args.email_name, args.maximum_interval_seconds, args.matching_criteria, args.endpoint_id, args.forwarding_token);
             return HeartbeatController.getHeartbeat(args.email_name);
         },
         recordHeartbeat: async (parent, args, context, info) => {
             return HeartbeatController.recordHeartbeat(args.email_name);
         },
         updateHeartbeat: async (parent, args, context, info) => {
-            await HeartbeatController.updateHeartbeat(args.email_name, args.maximum_interval_seconds, args.matching_criteria);
+            await HeartbeatController.updateHeartbeat(args.email_name, args.maximum_interval_seconds, args.matching_criteria, args.endpoint_id, args.forwarding_token);
             return HeartbeatController.getHeartbeat(args.email_name);
         },
         deleteHeartbeat: async (parent, args, context, info) => {
@@ -39,6 +39,9 @@ export const resolvers = {
         },
         createPushoverEndpoint: async (parent, args, context, info) => {
             return PushoverController.createEndpoint(args.user_key, args.description);
+        },
+        updatePushoverEndpoint: async (parent, args, context, info) => {
+            return PushoverController.updateEndpoint(args.id, args.user_key, args.description);
         }
     },
     Heartbeat: {

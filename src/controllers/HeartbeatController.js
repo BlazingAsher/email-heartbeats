@@ -30,7 +30,7 @@ export function validateHeartbeatMatchingCriteria(matching_criteria) {
     return true;
 }
 
-export async function createHeartbeat(email_name, maximum_interval_seconds, matching_criteria, endpoint_id) {
+export async function createHeartbeat(email_name, maximum_interval_seconds, matching_criteria, endpoint_id, forwarding_token) {
     validateHeartbeatName(email_name);
     validateHeartbeatMatchingCriteria(matching_criteria);
 
@@ -38,13 +38,14 @@ export async function createHeartbeat(email_name, maximum_interval_seconds, matc
         email_name,
         max_heartbeat_interval_seconds: maximum_interval_seconds,
         matching_criteria,
-        endpoint_id
+        endpoint_id,
+        forwarding_token,
     });
 
     return getHeartbeat(email_name);
 }
 
-export async function updateHeartbeat(email_name, maximum_interval_seconds, matching_criteria, endpoint_id) {
+export async function updateHeartbeat(email_name, maximum_interval_seconds, matching_criteria, endpoint_id, forwarding_token) {
     let updater = {};
 
     if (maximum_interval_seconds !== undefined) {
@@ -58,6 +59,10 @@ export async function updateHeartbeat(email_name, maximum_interval_seconds, matc
 
     if (endpoint_id !== undefined) {
         updater.endpoint_id = endpoint_id;
+    }
+
+    if (forwarding_token !== undefined) {
+        updater.forwarding_token = forwarding_token;
     }
 
     if (Object.keys(updater).length !== 0) {
@@ -98,6 +103,10 @@ export async function getStaleHeartbeats() {
     return staleHeartbeats;
 }
 
+export async function getAllHeartbeatsByEndpointId(endpoint_id) {
+    return db('heartbeats').where({ endpoint_id });
+}
+
 export async function getNeverTriggeredHeartbeats() {
     return db('heartbeats').where({ last_heartbeat: null });
 }
@@ -112,9 +121,17 @@ export async function recordHeartbeat(email_name) {
     const res = await db('heartbeats')
         .where({ email_name })
         .update({
-            last_heartbeat: Math.floor(new Date().getTime() / 1000),
+            last_heartbeat: Math.floor(Date.now() / 1000),
         }, ['email_name', 'last_heartbeat'])
         .limit(1);
 
     return res[0];
+}
+
+export function recordHeartbeatStaleNotifications(email_names, time) {
+    return db('heartbeats')
+        .whereIn('email_name', email_names)
+        .update({
+            last_stale_notify: time
+        });
 }

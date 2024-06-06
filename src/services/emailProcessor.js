@@ -1,6 +1,8 @@
 import {getMatcher} from "./cachedMatcherProvider.js";
 import {recordHeartbeat} from "../controllers/HeartbeatController.js";
+import {getForwardingInformation} from "./cachedForwardingInformationProvider.js";
 import logger from "../logger.js";
+import {sendPushoverMessage} from "../connectors/PushoverConnector.js";
 
 export async function processEmail(email) {
   // Process the email here
@@ -57,6 +59,13 @@ export async function processEmail(email) {
   }
   else {
     // send to pushover
+    const forwardingInfo = await getForwardingInformation(email_name);
+    await sendPushoverMessage(
+        forwardingInfo.forwarding_token,
+        forwardingInfo.user_key,
+        body,
+        subject
+        );
   }
 
 }

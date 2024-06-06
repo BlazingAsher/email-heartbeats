@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 import * as http from "http";
 import express from "express";
 import morgan from "morgan";
