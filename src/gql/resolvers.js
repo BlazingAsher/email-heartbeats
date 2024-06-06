@@ -1,4 +1,5 @@
 import * as HeartbeatController from '../controllers/HeartbeatController.js';
+import * as PushoverController from '../controllers/PushoverController.js';
 
 export const resolvers = {
     Query: {
@@ -14,6 +15,12 @@ export const resolvers = {
         neverTriggeredHeartbeats: async (parent, args, context, info) => {
             return HeartbeatController.getNeverTriggeredHeartbeats();
         },
+        pushoverEndpoints: async (parent, args, context, info) => {
+            return PushoverController.getEndpoints();
+        },
+        pushoverEndpoint: async (parent, args, context, info) => {
+            return PushoverController.getEndpoint(args.id);
+        }
     },
     Mutation: {
         createHeartbeat: async (parent, args, context, info) => {
@@ -27,5 +34,13 @@ export const resolvers = {
             await HeartbeatController.updateHeartbeat(args.email_name, args.maximum_interval_seconds, args.matching_criteria);
             return HeartbeatController.getHeartbeat(args.email_name);
         },
+        createPushoverEndpoint: async (parent, args, context, info) => {
+            return PushoverController.createEndpoint(args.user_key, args.description);
+        }
+    },
+    Heartbeat: {
+        endpoint: async (parent, args, context, info) => {
+            return PushoverController.getEndpoint(parent.endpoint_id);
+        }
     }
 }

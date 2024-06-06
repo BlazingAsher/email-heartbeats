@@ -1,11 +1,4 @@
-import knex from 'knex';
-
-const db = knex({
-    client: 'better-sqlite3',
-    connection: {
-        filename: './email-heartbeats-dev.db'
-    }
-});
+import { db } from '../services/database.js';
 
 export function validateHeartbeatName(name) {
     if (name.length < 3) {
@@ -34,7 +27,7 @@ export function validateHeartbeatMatchingCriteria(matching_criteria) {
     return true;
 }
 
-export async function createHeartbeat(email_name, maximum_interval_seconds, matching_criteria) {
+export async function createHeartbeat(email_name, maximum_interval_seconds, matching_criteria, endpoint_id) {
     validateHeartbeatName(email_name);
     validateHeartbeatMatchingCriteria(matching_criteria);
 
@@ -42,18 +35,33 @@ export async function createHeartbeat(email_name, maximum_interval_seconds, matc
         email_name,
         max_heartbeat_interval_seconds: maximum_interval_seconds,
         matching_criteria,
+        endpoint_id
     });
 
     return getHeartbeat(email_name);
 }
 
-export async function updateHeartbeat(email_name, maximum_interval_seconds, matching_criteria) {
-    validateHeartbeatMatchingCriteria(matching_criteria);
+export async function updateHeartbeat(email_name, maximum_interval_seconds, matching_criteria, endpoint_id) {
+    let updater = {};
 
-    await db('heartbeats').where({ email_name }).update({
-        max_heartbeat_interval_seconds: maximum_interval_seconds,
-        matching_criteria,
-    });
+    if (maximum_interval_seconds !== undefined) {
+        updater.max_heartbeat_interval_seconds = maximum_interval_seconds;
+    }
+
+    if (matching_criteria !== undefined) {
+        validateHeartbeatMatchingCriteria(matching_criteria);
+        updater.matching_criteria = matching_criteria;
+    }
+
+    if (endpoint_id !== undefined) {
+        updater.endpoint_id = endpoint_id;
+    }
+
+    if (Object.keys(updater).length !== 0) {
+        await db('heartbeats').where({ email_name }).update(updater);
+    }
+
+    return getHeartbeat(email_name);
 }
 
 export async function getHeartbeat(email_name) {

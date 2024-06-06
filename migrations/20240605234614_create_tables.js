@@ -2,7 +2,7 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function(knex) {
+export function up(knex) {
     return knex.schema
         .createTable('heartbeats', function(table) {
             table.string('email_name').primary();
@@ -12,13 +12,13 @@ exports.up = function(knex) {
 
             table.index('last_heartbeat');
         });
-};
+}
 
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function(knex) {
+export function down(knex) {
     return knex.schema
-        .dropTable('heartbeats')
-};
+        .dropTable('heartbeats');
+}

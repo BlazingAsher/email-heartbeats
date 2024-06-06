@@ -9,6 +9,13 @@ export const typeDefs = `#graphql
         last_heartbeat: Int
         max_heartbeat_interval_seconds: Int!
         matching_criteria: String!
+        endpoint: PushoverEndpoint
+    }
+    
+    type PushoverEndpoint {
+        id: Int!
+        user_key: String!
+        description: String
     }
     
     type Query {
@@ -16,11 +23,14 @@ export const typeDefs = `#graphql
         heartbeats: [Heartbeat]
         staleHeartbeats: [Heartbeat]
         neverTriggeredHeartbeats: [Heartbeat]
+        pushoverEndpoints: [PushoverEndpoint]
+        pushoverEndpoint(id: Int!): PushoverEndpoint
     }
     
     type Mutation {
-        createHeartbeat(email_name: String!, maximum_interval_seconds: Int!, matching_criteria: String!): Heartbeat
+        createHeartbeat(email_name: String!, maximum_interval_seconds: Int!, matching_criteria: String!, endpoint_id: Int): Heartbeat
         recordHeartbeat(email_name: String!): ConciseHeartbeat
-        updateHeartbeat(email_name: String!, maximum_interval_seconds: Int, matching_criteria: String): Heartbeat
+        updateHeartbeat(email_name: String!, maximum_interval_seconds: Int, matching_criteria: String, endpoint_id: Int): Heartbeat
+        createPushoverEndpoint(user_key: String!, description: String): PushoverEndpoint
     }
 `;
