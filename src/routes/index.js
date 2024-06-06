@@ -1,12 +1,12 @@
-const logger = require('../logger');
+import logger from "../logger.js";
 
-var express = require('express');
+import express from "express";
+import { simpleParser } from "mailparser";
+import * as Busboy from "busboy";
+
+import {processEmail} from "../services/emailProcessor.js";
+
 var router = express.Router();
-
-const Busboy = require('busboy');
-const simpleParser = require('mailparser').simpleParser;
-
-const emailProcessor = require('../services/emailProcessor');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -23,7 +23,7 @@ router.post('/incoming-sendgrid', function(req, res) {
         skipTextLinks: true
       })
         .then(mail => {
-          emailProcessor.processEmail(mail);
+          processEmail(mail);
         })
         .catch(err => {
           logger.error('Error parsing email from Sendgrid.', err);
@@ -38,4 +38,4 @@ router.post('/incoming-sendgrid', function(req, res) {
   req.pipe(busboy);
 })
 
-module.exports = router;
+export default router;

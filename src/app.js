@@ -1,13 +1,26 @@
-const http = require('http');
-const express = require("express");
-const morgan = require("morgan");
+import * as http from "http";
+import express from "express";
+import morgan from "morgan";
+import logger from "./logger.js";
 
-const logger = require('./logger');
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
 
-const indexRouter = require('./routes/index');
+import { typeDefs } from './gql/typedefs.js';
+import { resolvers } from './gql/resolvers.js';
+
+import indexRouter from "./routes/index.js";
+
 
 // Setup Express
 const app = express();
+
+const apolloServer = new ApolloServer({
+    typeDefs,
+    resolvers,
+});
+
+await apolloServer.start();
 
 app.use(morgan(":remote-addr :method :url :status :res[content-length] - :response-time ms", {
     stream: {
@@ -18,6 +31,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/', indexRouter);
+
+app.use('/graphql', expressMiddleware(apolloServer));
 
 const port = process.env.PORT || '3000';
 

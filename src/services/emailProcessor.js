@@ -1,6 +1,4 @@
-const emailProcessor = {};
-
-emailProcessor.processEmail = function(email) {
+export function processEmail(email) {
   // Process the email here
   const destination = email.to.value.address;
   const subject = email.subject;
@@ -10,5 +8,3 @@ emailProcessor.processEmail = function(email) {
   console.log(`Subject: ${subject}`);
   console.log(`Text: ${text}`);
 }
-
-module.exports = emailProcessor;
