@@ -1,4 +1,7 @@
 import { db } from '../services/database.js';
+import { EventEmitter } from 'events';
+
+export const HeartbeatUpdateEventEmitter = new EventEmitter();
 
 export function validateHeartbeatName(name) {
     if (name.length < 3) {
@@ -59,9 +62,17 @@ export async function updateHeartbeat(email_name, maximum_interval_seconds, matc
 
     if (Object.keys(updater).length !== 0) {
         await db('heartbeats').where({ email_name }).update(updater);
+        HeartbeatUpdateEventEmitter.emit('update', email_name);
     }
 
     return getHeartbeat(email_name);
+}
+
+export async function deleteHeartbeat(email_name) {
+    const res = await db('heartbeats').where({ email_name }).delete();
+    HeartbeatUpdateEventEmitter.emit('delete', email_name);
+
+    return res > 0;
 }
 
 export async function getHeartbeat(email_name) {

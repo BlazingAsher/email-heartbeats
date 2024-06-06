@@ -34,6 +34,9 @@ export const resolvers = {
             await HeartbeatController.updateHeartbeat(args.email_name, args.maximum_interval_seconds, args.matching_criteria);
             return HeartbeatController.getHeartbeat(args.email_name);
         },
+        deleteHeartbeat: async (parent, args, context, info) => {
+            return HeartbeatController.deleteHeartbeat(args.email_name);
+        },
         createPushoverEndpoint: async (parent, args, context, info) => {
             return PushoverController.createEndpoint(args.user_key, args.description);
         }

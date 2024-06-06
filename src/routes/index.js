@@ -15,6 +15,8 @@ router.get('/', function(req, res, next) {
 
 router.post('/incoming-sendgrid', function(req, res) {
   const busboy = Busboy({ headers: req.headers });
+  const startTime = new Date().getTime();
+
   busboy.on('field', function(name, value) {
     if(name === "email") {
       simpleParser(value, {
@@ -23,7 +25,12 @@ router.post('/incoming-sendgrid', function(req, res) {
         skipTextLinks: true
       })
         .then(mail => {
-          processEmail(mail);
+          processEmail(mail).then(() => {
+            const processingTime = new Date().getTime() - startTime;
+            logger.info(`Email processed in ${processingTime}ms`);
+          }).catch (err => {
+            logger.error('Error processing email from Sendgrid.', err);
+          })
         })
         .catch(err => {
           logger.error('Error parsing email from Sendgrid.', err);

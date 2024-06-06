@@ -31,6 +31,7 @@ export const typeDefs = `#graphql
         createHeartbeat(email_name: String!, maximum_interval_seconds: Int!, matching_criteria: String!, endpoint_id: Int): Heartbeat
         recordHeartbeat(email_name: String!): ConciseHeartbeat
         updateHeartbeat(email_name: String!, maximum_interval_seconds: Int, matching_criteria: String, endpoint_id: Int): Heartbeat
+        deleteHeartbeat(email_name: String!): Boolean
         createPushoverEndpoint(user_key: String!, description: String): PushoverEndpoint
     }
 `;
