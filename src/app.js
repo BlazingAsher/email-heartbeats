@@ -26,8 +26,10 @@ const apolloServer = new ApolloServer({
 
 await apolloServer.start();
 
+morgan.token('path', (req, res) => req.path);
+
 app.use(morgan(
-    ":remote-addr :method :url :status :res[content-length] - :response-time ms",
+    ":remote-addr :method :path :status :res[content-length] - :response-time ms",
     {
         "stream": {
             "write": (message) => logger.info(message)
@@ -36,14 +38,27 @@ app.use(morgan(
 ));
 app.use(function (req, res, next) {
     const authHeader = req.headers.authorization;
-    if (!authHeader) {
+    const authQuery = req.query.token;
+
+    if (!authHeader && !authQuery) {
         return res.status(401).json({"message": "Unauthorized"});
     }
-    const token = authHeader.split(" ");
-    if (!token || token.length !== 2 || token[0] !== "Bearer") {
-        return res.status(401).json({"message": "Unauthorized"});
+
+    let token = null;
+
+    if(authHeader) {
+        const authData = authHeader.split(" ", 1);
+        if (!authData || authData.length !== 2 || authData[0] !== "Bearer") {
+            return res.status(401).json({"message": "Unauthorized"});
+        }
+
+        token = authData[1];
     }
-    tokenExists(token[1]).
+    else {
+        token = authQuery;
+    }
+
+    tokenExists(token).
         then((exists) => {
             if (!exists) {
                 return res.status(401).json({"message": "Unauthorized"});
@@ -51,7 +66,7 @@ app.use(function (req, res, next) {
             next();
         }).
         catch((err) => {
-            logger.error(err);
+            logger.error("Unable to validate token.", err);
             return res.status(500).json({"message": "Internal Server Error"});
         });
 });
