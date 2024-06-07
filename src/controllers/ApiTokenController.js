@@ -5,6 +5,10 @@ import {db} from "../services/database.js";
 
 export const ApiTokenUpdateEventEmitter = new EventEmitter();
 
+export async function getAllApiTokens () {
+    return db("api_tokens");
+}
+
 export async function getApiToken (id) {
     return db("api_tokens").where(
         "id",

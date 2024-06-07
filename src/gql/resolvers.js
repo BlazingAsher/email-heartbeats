@@ -22,6 +22,12 @@ export const resolvers = {
         },
         "pushoverEndpoint": async (parent, args) => {
             return PushoverController.getEndpoint(args.id);
+        },
+        "apiTokens": async () => {
+            return ApiTokenController.getAllApiTokens();
+        },
+        "apiToken": async (parent, args) => {
+            return ApiTokenController.getApiToken(args.id);
         }
     },
     "Mutation": {

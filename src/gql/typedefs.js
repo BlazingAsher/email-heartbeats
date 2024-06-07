@@ -33,6 +33,8 @@ export const typeDefs = `#graphql
         neverTriggeredHeartbeats: [Heartbeat]
         pushoverEndpoints: [PushoverEndpoint]
         pushoverEndpoint(id: Int!): PushoverEndpoint
+        apiTokens: [ApiToken]
+        apiToken(id: String!): ApiToken
     }
     
     type Mutation {
