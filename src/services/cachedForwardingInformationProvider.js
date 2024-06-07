@@ -1,7 +1,7 @@
 import NodeCache from "node-cache";
 import * as process from "process";
 
-import * as HeartbeatController from "../controllers/heartbeatController.js";
+import * as HeartbeatController from "../controllers/HeartbeatController.js";
 import * as PushoverController from "../controllers/PushoverController.js";
 
 import logger from "../logger.js";

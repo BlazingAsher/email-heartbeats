@@ -1,5 +1,5 @@
 import NodeCache from "node-cache";
-import * as HeartbeatController from "../controllers/heartbeatController.js";
+import * as HeartbeatController from "../controllers/HeartbeatController.js";
 import logger from "../logger.js";
 
 const matcherCache = new NodeCache();

@@ -2,8 +2,8 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 
-import * as HeartbeatController from "../controllers/heartbeatController";
-import * as PushoverController from "../controllers/pushoverController";
+import * as HeartbeatController from "../controllers/HeartbeatController.js";
+import * as PushoverController from "../controllers/PushoverController.js";
 import {sendPushoverMessage} from "../connectors/PushoverConnector.js";
 import logger from "../logger.js";
 
