@@ -27,6 +27,15 @@ export const typeDefs = `#graphql
         description: String
     }
     
+    type Email {
+        id: Int!
+        received_time: Int!
+        to: String!
+        from: String!
+        subject: String!
+        body: String!
+    }
+    
     type Query {
         heartbeat(email_name: String!): Heartbeat
         heartbeats: [Heartbeat]
@@ -36,6 +45,8 @@ export const typeDefs = `#graphql
         pushoverEndpoint(id: Int!): PushoverEndpoint
         apiTokens: [ApiToken]
         apiToken(id: String!): ApiToken
+        emails(newer_than: Int!, limit: Int!): [Email]
+        email(id: Int!): Email
     }
     
     type Mutation {

@@ -6,8 +6,19 @@ import {sendPushoverMessage} from "../connectors/PushoverConnector.js";
 import {insertEmail} from "../controllers/EmailController.js";
 
 export async function processEmail (email) {
-    const destination = email.to.value[0].address;
-    const from = email.from.value[0].address;
+    const destination = email.to?.value?.[0]?.address;
+
+    if (!destination) {
+        logger.warn(
+            "Email has no destination.",
+            {
+                "body": email.text
+            }
+        );
+        return;
+    }
+
+    const from = email.from?.value?.[0]?.address ?? "(unknown sender)";
     const subject = email.subject ?? "(no subject)";
     const body = email.text.trim() === ""
         ? "(empty body)"

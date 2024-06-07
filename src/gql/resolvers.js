@@ -28,6 +28,15 @@ export const resolvers = {
         },
         "apiToken": async (parent, args) => {
             return ApiTokenController.getApiToken(args.id);
+        },
+        "emails": async (parent, args) => {
+            return EmailController.getEmails(
+                args.newer_than,
+                args.limit
+            );
+        },
+        "email": async (parent, args) => {
+            return EmailController.getEmail(args.id);
         }
     },
     "Mutation": {
