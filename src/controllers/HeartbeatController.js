@@ -132,13 +132,12 @@ export async function getStaleHeartbeats () {
     const staleHeartbeats = [];
 
     // heartbeats are stale only if we have a last_heartbeat
-    const stream = db("heartbeats").
-        whereNotNull("last_heartbeat").
-        stream();
+    const allHeartbeats = await db("heartbeats").
+        whereNotNull("last_heartbeat");
 
     const nowTime = Math.floor(new Date().getTime() / 1000);
 
-    for await (const row of stream) {
+    for (const row of allHeartbeats) {
         if (nowTime - row.last_heartbeat > row.max_heartbeat_interval_seconds) {
             staleHeartbeats.push(row);
         }
