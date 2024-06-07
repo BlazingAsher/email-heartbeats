@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "start": "node ./src/app.js",
-    "lint": "eslint ./src/**/*.js ./src/*.js ./migrations/*.js"
+    "lint": "eslint ./src/**/*.js ./src/*.js ./migrations/*.js",
+    "migrate": "knex migrate:latest",
+    "migrate:production": "knex migrate:latest --env production"
   },
   "dependencies": {
     "@apollo/server": "^4.10.4",

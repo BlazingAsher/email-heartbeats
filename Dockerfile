@@ -8,9 +8,9 @@ RUN apk add dumb-init
 
 EXPOSE 3000
 
-#COPY knexfile.js .
+COPY knexfile.js .
 COPY package*.json .
-#COPY migrations migrations
+COPY migrations migrations
 RUN npm ci
 COPY src src
 
