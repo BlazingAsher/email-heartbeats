@@ -15,7 +15,7 @@ export async function getApiToken (id) {
 
 export async function tokenExists (id) {
     const response = await db.raw(
-        "SELECT EXISTS (SELECT 1 from ?? WHERE `id`= ?) AS token_exists",
+        "SELECT EXISTS (SELECT 1 from ?? WHERE id = ?) AS token_exists",
         [
             "api_tokens",
             id
