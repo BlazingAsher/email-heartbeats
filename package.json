@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node ./src/app.js",
-    "lint": "eslint ./src/**/*.js"
+    "lint": "eslint ./src/**/*.js ./src/*.js ./migrations/*.js"
   },
   "dependencies": {
     "@apollo/server": "^4.10.4",
@@ -21,6 +21,7 @@
     "mailparser": "^3.7.1",
     "morgan": "~1.9.1",
     "node-cache": "^5.1.2",
+    "short-uuid": "^5.2.0",
     "winston": "^3.13.0"
   },
   "devDependencies": {

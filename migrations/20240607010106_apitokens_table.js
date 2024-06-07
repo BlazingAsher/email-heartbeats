@@ -4,10 +4,11 @@
  */
 export function up (knex) {
     return knex.schema.
-        alterTable(
-            "heartbeats",
-            function (table) {
-                table.bigint("last_stale_notify");
+        createTable(
+            "api_tokens",
+            (table) => {
+                table.string("id").primary();
+                table.string("description");
             }
         );
 }
@@ -18,10 +19,5 @@ export function up (knex) {
  */
 export function down (knex) {
     return knex.schema.
-        alterTable(
-            "heartbeats",
-            function (table) {
-                table.dropColumn("last_stale_notify");
-            }
-        );
+        dropTable("api_tokens");
 }

@@ -13,7 +13,7 @@ export default {
     },
 
     production: {
-        client: 'better-sqlite3',
+        client: process.env.DATABASE_DRIVER || 'better-sqlite3',
         connection: {
             filename: process.env.DATABASE || './eamil-heartbeats.db'
         }

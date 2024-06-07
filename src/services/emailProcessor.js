@@ -3,19 +3,15 @@ import {recordHeartbeat} from "../controllers/HeartbeatController.js";
 import {getForwardingInformation} from "./cachedForwardingInformationProvider.js";
 import logger from "../logger.js";
 import {sendPushoverMessage} from "../connectors/PushoverConnector.js";
+import {insertEmail} from "../controllers/EmailController.js";
 
 export async function processEmail (email) {
-    // Process the email here
-    console.log(email);
     const destination = email.to.value[0].address;
     const from = email.from.value[0].address;
-    const subject = email.subject;
-    const body = email.text;
-
-    console.log(`Destination: ${destination}`);
-    console.log(`From: ${from}`);
-    console.log(`Subject: ${subject}`);
-    console.log(`Text: ${body}`);
+    const subject = email.subject ?? "(no subject)";
+    const body = email.text.trim() === ""
+        ? "(empty body)"
+        : email.text;
 
     const email_name = destination.split("@")[0];
     const matcher = await getMatcher(email_name);
@@ -55,6 +51,20 @@ export async function processEmail (email) {
         }
     }
 
+    try {
+        await insertEmail(
+            Math.floor(Date.now() / 1000),
+            destination,
+            from,
+            subject,
+            body
+        );
+    } catch (e) {
+        logger.error(
+            "Unable to store email.",
+            e
+        );
+    }
     if (matched) {
         await recordHeartbeat(email_name);
     } else {

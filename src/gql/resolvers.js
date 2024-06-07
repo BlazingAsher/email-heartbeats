@@ -1,5 +1,7 @@
 import * as HeartbeatController from "../controllers/HeartbeatController.js";
 import * as PushoverController from "../controllers/PushoverController.js";
+import * as EmailController from "../controllers/EmailController.js";
+import * as ApiTokenController from "../controllers/ApiTokenController.js";
 
 export const resolvers = {
     "Query": {
@@ -26,7 +28,7 @@ export const resolvers = {
         "createHeartbeat": async (parent, args) => {
             await HeartbeatController.createHeartbeat(
                 args.email_name,
-                args.maximum_interval_seconds,
+                args.max_heartbeat_interval_seconds,
                 args.matching_criteria,
                 args.endpoint_id,
                 args.forwarding_token
@@ -39,7 +41,7 @@ export const resolvers = {
         "updateHeartbeat": async (parent, args) => {
             await HeartbeatController.updateHeartbeat(
                 args.email_name,
-                args.maximum_interval_seconds,
+                args.max_heartbeat_interval_seconds,
                 args.matching_criteria,
                 args.endpoint_id,
                 args.forwarding_token
@@ -61,6 +63,21 @@ export const resolvers = {
                 args.user_key,
                 args.description
             );
+        },
+        "deleteEmailsOlderThan": async (parent, args) => {
+            return EmailController.deleteEmailsOlderThan(args.timestamp);
+        },
+        "createApiToken": async (parent, args) => {
+            return ApiTokenController.createApiToken(args.description);
+        },
+        "updateApiToken": async (parent, args) => {
+            return ApiTokenController.updateApiToken(
+                args.id,
+                args.description
+            );
+        },
+        "deleteApiToken": async (parent, args) => {
+            return ApiTokenController.deleteApiToken(args.id);
         }
     },
     "Heartbeat": {
