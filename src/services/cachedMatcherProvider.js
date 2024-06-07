@@ -32,7 +32,10 @@ export async function getMatcher (email_name) {
         return null;
     }
 
-    const matcher = JSON.parse(heartbeat.matching_criteria);
+    const matcher = typeof heartbeat.matching_criteria === "object"
+        ? heartbeat.matching_criteria
+        : JSON.parse(heartbeat.matching_criteria);
+
     const compiledMatcher = {
         "from": [],
         "subject": [],
