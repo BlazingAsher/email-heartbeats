@@ -42,7 +42,10 @@ await apolloServer.start();
 
 morgan.token(
     "path",
-    (req) => req.originalUrl.split("?", 1)[0]
+    (req) => req.originalUrl.split(
+        "?",
+        1
+    )[0]
 );
 
 app.use(morgan(
@@ -53,7 +56,7 @@ app.use(morgan(
         }
     }
 ));
-app.use(function handleAuth(req, res, next) {
+app.use(function handleAuth (req, res, next) {
     const authHeader = req.headers.authorization;
     const authQuery = req.query.token;
 

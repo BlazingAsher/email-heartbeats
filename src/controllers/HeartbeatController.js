@@ -42,7 +42,11 @@ export function validateHeartbeatMatchingCriteria (matching_criteria) {
         throw new Error("Matching criteria \"body\" must be an array");
     }
 
-    for (const matcher_string of [].concat((criteria["from"] ?? []), (criteria["subject"] ?? []), (criteria["body"] ?? []))) {
+    for (const matcher_string of [].concat(
+        criteria["from"] ?? [],
+        criteria["subject"] ?? [],
+        criteria["body"] ?? []
+    )) {
         const match = matcher_string.match(/^\/(.*?)\/([gimsuy]*)$/);
         if (!match) {
             throw new Error(`Invalid matcher: ${matcher_string}`);

@@ -18,7 +18,7 @@ export async function getApiToken (id) {
 }
 
 export async function tokenExists (id) {
-    return (await getApiToken(id)) !== undefined;
+    return await getApiToken(id) !== undefined;
 }
 
 export async function createApiToken (description) {
