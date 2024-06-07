@@ -126,7 +126,11 @@ export async function getAllHeartbeats () {
 export async function getStaleHeartbeats () {
     const staleHeartbeats = [];
 
-    const stream = db("heartbeats").stream();
+    // heartbeats are stale only if we have a last_heartbeat
+    const stream = db("heartbeats")
+        .whereNotNull("last_heartbeat")
+        .stream();
+
     const nowTime = Math.floor(new Date().getTime() / 1000);
 
     for await (const row of stream) {
