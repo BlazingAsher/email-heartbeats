@@ -13,10 +13,8 @@ export default {
     },
 
     production: {
-        client: process.env.DATABASE_DRIVER || 'better-sqlite3',
-        connection: {
-            filename: process.env.DATABASE || './eamil-heartbeats.db'
-        }
+        client: 'pg',
+        connection: process.env.DATABASE_URL,
     }
 
 };
