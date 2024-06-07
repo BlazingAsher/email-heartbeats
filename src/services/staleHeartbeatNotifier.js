@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import {schedule} from "node-cron";
 
 import * as HeartbeatController from "../controllers/HeartbeatController.js";
 import * as PushoverController from "../controllers/PushoverController.js";
@@ -51,7 +52,13 @@ async function staleHeartbeatNotifier () {
             const overdueTimeFormatted = formatSeconds(startTime - heartbeat.last_heartbeat - heartbeat.max_heartbeat_interval_seconds);
             const lastHeartbeatFormatted = dayjs.unix(heartbeat.last_heartbeat).tz(endpoint.timezone).
                 format("YYYY-MM-DD HH:mm:ss Z");
-            notificationMessage += `${heartbeat.email_name} - ${overdueTimeFormatted} overdue - Last heartbeat: ${lastHeartbeatFormatted}\n`;
+            notificationMessage += `${heartbeat.email_name}`;
+
+            if (heartbeat.description) {
+                notificationMessage += ` (${heartbeat.description})`;
+            }
+
+            notificationMessage += ` - ${overdueTimeFormatted} overdue - Last heartbeat: ${lastHeartbeatFormatted}\n`;
         }
 
         await sendPushoverMessage(
@@ -62,7 +69,8 @@ async function staleHeartbeatNotifier () {
     }
 }
 
-setInterval(
+schedule(
+    "0 */1 * * *",
     () => {
         staleHeartbeatNotifier().catch((err) => {
             logger.error(
@@ -70,6 +78,5 @@ setInterval(
                 err
             );
         });
-    },
-    60000
+    }
 );
