@@ -1,12 +1,13 @@
 import {db} from "../services/database.js";
 
-export function insertEmail (received_time, to, from, subject, body) {
+export function insertEmail (received_time, to, from, subject, body, email_name) {
     return db("emails").insert({
         received_time,
         to,
         from,
         subject,
-        body
+        body,
+        email_name
     });
 }
 

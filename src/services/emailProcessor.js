@@ -27,6 +27,24 @@ export async function processEmail (email) {
     const email_name = destination.split("@")[0];
     const matcher = await getMatcher(email_name);
 
+    try {
+        await insertEmail(
+            Math.floor(Date.now() / 1000),
+            destination,
+            from,
+            subject,
+            body,
+            matcher
+                ? email_name
+                : null
+        );
+    } catch (e) {
+        logger.error(
+            "Unable to store email.",
+            e
+        );
+    }
+
     if (!matcher) {
         logger.warn("No heartbeat found for email: " + email_name);
         return;
@@ -62,20 +80,6 @@ export async function processEmail (email) {
         }
     }
 
-    try {
-        await insertEmail(
-            Math.floor(Date.now() / 1000),
-            destination,
-            from,
-            subject,
-            body
-        );
-    } catch (e) {
-        logger.error(
-            "Unable to store email.",
-            e
-        );
-    }
     if (matched) {
         await recordHeartbeat(email_name);
     } else {

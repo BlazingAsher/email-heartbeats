@@ -34,6 +34,7 @@ export const typeDefs = `#graphql
         from: String!
         subject: String!
         body: String!
+        heartbeat: Heartbeat
     }
     
     type Query {
@@ -45,7 +46,7 @@ export const typeDefs = `#graphql
         pushoverEndpoint(id: Int!): PushoverEndpoint
         apiTokens: [ApiToken]
         apiToken(id: String!): ApiToken
-        emails(newer_than: Int!, limit: Int!): [Email]
+        emails(limit: Int!, newer_than: Int): [Email]
         email(id: Int!): Email
     }
     

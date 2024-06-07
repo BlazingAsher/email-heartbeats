@@ -31,7 +31,7 @@ export const resolvers = {
         },
         "emails": async (parent, args) => {
             return EmailController.getEmails(
-                args.newer_than,
+                args.newer_than ?? 0,
                 args.limit
             );
         },
@@ -98,6 +98,11 @@ export const resolvers = {
     "Heartbeat": {
         "endpoint": async (parent) => {
             return PushoverController.getEndpoint(parent.endpoint_id);
+        }
+    },
+    "Email": {
+        "heartbeat": async (parent) => {
+            return HeartbeatController.getHeartbeat(parent.email_name);
         }
     }
 };
