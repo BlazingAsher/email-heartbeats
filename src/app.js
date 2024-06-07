@@ -42,7 +42,7 @@ await apolloServer.start();
 
 morgan.token(
     "path",
-    (req) => req.path
+    (req) => req.originalUrl.split("?", 1)[0]
 );
 
 app.use(morgan(
@@ -53,7 +53,7 @@ app.use(morgan(
         }
     }
 ));
-app.use(function (req, res, next) {
+app.use(function handleAuth(req, res, next) {
     const authHeader = req.headers.authorization;
     const authQuery = req.query.token;
 
@@ -93,7 +93,6 @@ app.use(function (req, res, next) {
         });
 });
 app.use(express.json());
-app.use(express.urlencoded({"extended": false}));
 
 app.use(
     "/",

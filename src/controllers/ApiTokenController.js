@@ -14,14 +14,7 @@ export async function getApiToken (id) {
 }
 
 export async function tokenExists (id) {
-    const response = await db.raw(
-        "SELECT EXISTS (SELECT 1 from ?? WHERE id = ?) AS token_exists",
-        [
-            "api_tokens",
-            id
-        ]
-    );
-    return response[0].token_exists === 1;
+    return (await getApiToken(id)) !== undefined;
 }
 
 export async function createApiToken (description) {
