@@ -2,15 +2,15 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 
-import * as HeartbeatController from '../controllers/heartbeatController';
-import * as PushoverController from '../controllers/pushoverController';
+import * as HeartbeatController from "../controllers/heartbeatController";
+import * as PushoverController from "../controllers/pushoverController";
 import {sendPushoverMessage} from "../connectors/PushoverConnector.js";
 import logger from "../logger.js";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-function formatSeconds(seconds) {
+function formatSeconds (seconds) {
     const days = Math.floor(seconds / 86400);
     seconds -= days * 86400;
     const hours = Math.floor(seconds / 3600);
@@ -21,7 +21,7 @@ function formatSeconds(seconds) {
     return `${days}d ${hours}h ${minutes}m ${seconds}s`;
 }
 
-async function staleHeartbeatNotifier() {
+async function staleHeartbeatNotifier () {
     const startTime = Date.now() / 1000;
     const staleHeartbeats = await HeartbeatController.getStaleHeartbeats();
 
@@ -39,24 +39,37 @@ async function staleHeartbeatNotifier() {
         }
     }
 
-    for (const [endpointId, heartbeats] of Object.entries(notificationsByEndpoint)) {
+    for (const [
+        endpointId,
+        heartbeats
+    ] of Object.entries(notificationsByEndpoint)) {
         const endpoint = await PushoverController.getEndpoint(endpointId);
 
-        let notificationMessage = 'The following heartbeats are stale:\n\n';
+        let notificationMessage = "The following heartbeats are stale:\n\n";
 
-        for(const heartbeat of heartbeats) {
+        for (const heartbeat of heartbeats) {
             const overdueTimeFormatted = formatSeconds(startTime - heartbeat.last_heartbeat - heartbeat.max_heartbeat_interval_seconds);
-            const lastHeartbeatFormatted = dayjs.unix(heartbeat.last_heartbeat).tz(endpoint.timezone).format('YYYY-MM-DD HH:mm:ss Z');
+            const lastHeartbeatFormatted = dayjs.unix(heartbeat.last_heartbeat).tz(endpoint.timezone).
+                format("YYYY-MM-DD HH:mm:ss Z");
             notificationMessage += `${heartbeat.email_name} - ${overdueTimeFormatted} overdue - Last heartbeat: ${lastHeartbeatFormatted}\n`;
         }
 
-        await sendPushoverMessage(endpoint.user_key, notificationMessage);
-        await HeartbeatController.recordHeartbeatStaleNotifications(heartbeats.map(h => h.email_name));
+        await sendPushoverMessage(
+            endpoint.user_key,
+            notificationMessage
+        );
+        await HeartbeatController.recordHeartbeatStaleNotifications(heartbeats.map((h) => h.email_name));
     }
 }
 
-setInterval(() => {
-    staleHeartbeatNotifier().catch(err => {
-        logger.error('Error in staleHeartbeatNotifier:', err);
-    });
-}, 60000);
+setInterval(
+    () => {
+        staleHeartbeatNotifier().catch((err) => {
+            logger.error(
+                "Error in staleHeartbeatNotifier:",
+                err
+            );
+        });
+    },
+    60000
+);

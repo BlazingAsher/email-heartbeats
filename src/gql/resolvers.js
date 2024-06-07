@@ -1,52 +1,71 @@
-import * as HeartbeatController from '../controllers/HeartbeatController.js';
-import * as PushoverController from '../controllers/PushoverController.js';
+import * as HeartbeatController from "../controllers/HeartbeatController.js";
+import * as PushoverController from "../controllers/PushoverController.js";
 
 export const resolvers = {
-    Query: {
-        heartbeat: async (parent, args, context, info) => {
+    "Query": {
+        "heartbeat": async (parent, args) => {
             return HeartbeatController.getHeartbeat(args.email_name);
         },
-        heartbeats: async (parent, args, context, info) => {
+        "heartbeats": async () => {
             return HeartbeatController.getAllHeartbeats();
         },
-        staleHeartbeats: async (parent, args, context, info) => {
+        "staleHeartbeats": async () => {
             return HeartbeatController.getStaleHeartbeats();
         },
-        neverTriggeredHeartbeats: async (parent, args, context, info) => {
+        "neverTriggeredHeartbeats": async () => {
             return HeartbeatController.getNeverTriggeredHeartbeats();
         },
-        pushoverEndpoints: async (parent, args, context, info) => {
+        "pushoverEndpoints": async () => {
             return PushoverController.getEndpoints();
         },
-        pushoverEndpoint: async (parent, args, context, info) => {
+        "pushoverEndpoint": async (parent, args) => {
             return PushoverController.getEndpoint(args.id);
         }
     },
-    Mutation: {
-        createHeartbeat: async (parent, args, context, info) => {
-            await HeartbeatController.createHeartbeat(args.email_name, args.maximum_interval_seconds, args.matching_criteria, args.endpoint_id, args.forwarding_token);
+    "Mutation": {
+        "createHeartbeat": async (parent, args) => {
+            await HeartbeatController.createHeartbeat(
+                args.email_name,
+                args.maximum_interval_seconds,
+                args.matching_criteria,
+                args.endpoint_id,
+                args.forwarding_token
+            );
             return HeartbeatController.getHeartbeat(args.email_name);
         },
-        recordHeartbeat: async (parent, args, context, info) => {
+        "recordHeartbeat": async (parent, args) => {
             return HeartbeatController.recordHeartbeat(args.email_name);
         },
-        updateHeartbeat: async (parent, args, context, info) => {
-            await HeartbeatController.updateHeartbeat(args.email_name, args.maximum_interval_seconds, args.matching_criteria, args.endpoint_id, args.forwarding_token);
+        "updateHeartbeat": async (parent, args) => {
+            await HeartbeatController.updateHeartbeat(
+                args.email_name,
+                args.maximum_interval_seconds,
+                args.matching_criteria,
+                args.endpoint_id,
+                args.forwarding_token
+            );
             return HeartbeatController.getHeartbeat(args.email_name);
         },
-        deleteHeartbeat: async (parent, args, context, info) => {
+        "deleteHeartbeat": async (parent, args) => {
             return HeartbeatController.deleteHeartbeat(args.email_name);
         },
-        createPushoverEndpoint: async (parent, args, context, info) => {
-            return PushoverController.createEndpoint(args.user_key, args.description);
+        "createPushoverEndpoint": async (parent, args) => {
+            return PushoverController.createEndpoint(
+                args.user_key,
+                args.description
+            );
         },
-        updatePushoverEndpoint: async (parent, args, context, info) => {
-            return PushoverController.updateEndpoint(args.id, args.user_key, args.description);
+        "updatePushoverEndpoint": async (parent, args) => {
+            return PushoverController.updateEndpoint(
+                args.id,
+                args.user_key,
+                args.description
+            );
         }
     },
-    Heartbeat: {
-        endpoint: async (parent, args, context, info) => {
+    "Heartbeat": {
+        "endpoint": async (parent) => {
             return PushoverController.getEndpoint(parent.endpoint_id);
         }
     }
-}
+};
