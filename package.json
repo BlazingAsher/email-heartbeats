@@ -4,10 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node ./src/app.js"
+    "start": "node ./src/app.js",
+    "lint": "eslint ./src/**/*.js"
   },
   "dependencies": {
     "@apollo/server": "^4.10.4",
+    "axios": "^1.7.2",
     "better-sqlite3": "^11.0.0",
     "busboy": "^1.6.0",
     "dayjs": "^1.11.11",
@@ -20,5 +22,11 @@
     "morgan": "~1.9.1",
     "node-cache": "^5.1.2",
     "winston": "^3.13.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.4.0",
+    "@stylistic/eslint-plugin-js": "^2.1.0",
+    "eslint": "^9.4.0",
+    "globals": "^15.4.0"
   }
 }
