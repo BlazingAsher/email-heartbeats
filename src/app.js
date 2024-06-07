@@ -19,6 +19,20 @@ import indexRouter from "./routes/index.js";
 // Setup Express
 const app = express();
 
+if (process.env.TRUST_PROXY) {
+    if (process.env.TRUST_PROXY === "true") {
+        app.set(
+            "trust proxy",
+            true
+        );
+    } else {
+        app.set(
+            "trust proxy",
+            process.env.TRUST_PROXY
+        );
+    }
+}
+
 const apolloServer = new ApolloServer({
     typeDefs,
     resolvers
@@ -26,7 +40,10 @@ const apolloServer = new ApolloServer({
 
 await apolloServer.start();
 
-morgan.token('path', (req, res) => req.path);
+morgan.token(
+    "path",
+    (req) => req.path
+);
 
 app.use(morgan(
     ":remote-addr :method :path :status :res[content-length] - :response-time ms",
@@ -46,15 +63,17 @@ app.use(function (req, res, next) {
 
     let token = null;
 
-    if(authHeader) {
-        const authData = authHeader.split(" ", 1);
+    if (authHeader) {
+        const authData = authHeader.split(
+            " ",
+            2
+        );
         if (!authData || authData.length !== 2 || authData[0] !== "Bearer") {
             return res.status(401).json({"message": "Unauthorized"});
         }
 
         token = authData[1];
-    }
-    else {
+    } else {
         token = authQuery;
     }
 
@@ -66,7 +85,10 @@ app.use(function (req, res, next) {
             next();
         }).
         catch((err) => {
-            logger.error("Unable to validate token.", err);
+            logger.error(
+                "Unable to validate token.",
+                err
+            );
             return res.status(500).json({"message": "Internal Server Error"});
         });
 });
