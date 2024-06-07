@@ -56,7 +56,7 @@ export function validateHeartbeatMatchingCriteria (matching_criteria) {
     return true;
 }
 
-export async function createHeartbeat (email_name, maximum_interval_seconds, matching_criteria, endpoint_id, forwarding_token) {
+export async function createHeartbeat (email_name, maximum_interval_seconds, matching_criteria, endpoint_id, forwarding_token, description) {
     validateHeartbeatName(email_name);
     validateHeartbeatMatchingCriteria(matching_criteria);
 
@@ -65,13 +65,14 @@ export async function createHeartbeat (email_name, maximum_interval_seconds, mat
         "max_heartbeat_interval_seconds": maximum_interval_seconds,
         matching_criteria,
         endpoint_id,
-        forwarding_token
+        forwarding_token,
+        description
     });
 
     return getHeartbeat(email_name);
 }
 
-export async function updateHeartbeat (email_name, maximum_interval_seconds, matching_criteria, endpoint_id, forwarding_token) {
+export async function updateHeartbeat (email_name, maximum_interval_seconds, matching_criteria, endpoint_id, forwarding_token, description) {
     let updater = {};
 
     if (maximum_interval_seconds !== undefined) {
@@ -89,6 +90,10 @@ export async function updateHeartbeat (email_name, maximum_interval_seconds, mat
 
     if (forwarding_token !== undefined) {
         updater.forwarding_token = forwarding_token;
+    }
+
+    if (description !== undefined) {
+        updater.description = description;
     }
 
     if (Object.keys(updater).length !== 0) {
@@ -127,9 +132,9 @@ export async function getStaleHeartbeats () {
     const staleHeartbeats = [];
 
     // heartbeats are stale only if we have a last_heartbeat
-    const stream = db("heartbeats")
-        .whereNotNull("last_heartbeat")
-        .stream();
+    const stream = db("heartbeats").
+        whereNotNull("last_heartbeat").
+        stream();
 
     const nowTime = Math.floor(new Date().getTime() / 1000);
 
