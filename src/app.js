@@ -35,7 +35,10 @@ if (process.env.TRUST_PROXY) {
 
 const apolloServer = new ApolloServer({
     typeDefs,
-    resolvers
+    resolvers,
+    "introspection": process.env.ENABLE_INTROSPECTION !== undefined
+        ? process.env.ENABLE_INTROSPECTION === "true"
+        : process.env.NODE_ENV !== "production"
 });
 
 await apolloServer.start();
