@@ -15,6 +15,9 @@ import {getTokenAccessControls} from "./services/cachedTokenProvider.js";
 
 import indexRouter from "./routes/index.js";
 
+import "./services/staleHeartbeatNotifier.js";
+import "./services/neverTriggeredHeartbeatNotifier.js";
+
 
 // Setup Express
 const app = express();
