@@ -13,18 +13,27 @@ ApiTokenController.ApiTokenUpdateEventEmitter.
         (token_id) => tokenCache.del(token_id)
     );
 
-export async function tokenExists (token) {
+export async function getTokenAccessControls (token) {
     const cachedToken = tokenCache.get(token);
     if (cachedToken) {
         return cachedToken;
     }
 
-    const tokenExists = await ApiTokenController.tokenExists(token);
+    const tokenData = await ApiTokenController.getApiToken(token);
 
-    tokenCache.set(
-        token,
-        tokenExists
-    );
+    if(tokenData === undefined){
+        tokenCache.set(
+            token,
+            new Set()
+        )
+    }
+    else {
+        tokenCache.set(
+            token,
+            new Set(tokenData.access_controls.split(","))
+        );
+    }
 
-    return tokenExists;
+
+    return tokenCache.get(token);
 }

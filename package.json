@@ -7,7 +7,9 @@
     "start": "node ./src/app.js",
     "lint": "eslint ./src/**/*.js ./src/*.js ./migrations/*.js",
     "migrate": "knex migrate:latest",
-    "migrate:production": "knex migrate:latest --env production"
+    "migrate:production": "knex migrate:latest --env production",
+    "docker:build": "docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/blazingasher/email-heartbeats:latest .",
+    "docker:push": "docker push ghcr.io/blazingasher/email-heartbeats:latest"
   },
   "dependencies": {
     "@apollo/server": "^4.10.4",

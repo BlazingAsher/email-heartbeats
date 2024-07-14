@@ -5,6 +5,16 @@ import {db} from "../services/database.js";
 
 export const ApiTokenUpdateEventEmitter = new EventEmitter();
 
+function validateAccessControls(access_controls) {
+    for (const access_control of access_controls) {
+        if (!["read", "write", "email:write", "heartbeat:write"].includes(access_control)) {
+            throw new Error("Invalid access control: " + access_control);
+        }
+    }
+
+    return true;
+}
+
 export async function getAllApiTokens () {
     return db("api_tokens");
 }
@@ -17,14 +27,13 @@ export async function getApiToken (id) {
         first();
 }
 
-export async function tokenExists (id) {
-    return await getApiToken(id) !== undefined;
-}
+export async function createApiToken (description, access_controls) {
+    validateAccessControls(access_controls.split(","));
 
-export async function createApiToken (description) {
     const id = short.uuid();
     const insertData = {
-        id
+        id,
+        access_controls: access_controls
     };
 
     if (description !== undefined) {
@@ -36,11 +45,17 @@ export async function createApiToken (description) {
     return getApiToken(id);
 }
 
-export async function updateApiToken (id, description) {
+
+export async function updateApiToken (id, description, access_controls) {
     const updateData = {};
 
     if (description !== undefined) {
         updateData.description = description;
+    }
+
+    if(access_controls !== undefined){
+        validateAccessControls(access_controls.split(","));
+        updateData.access_controls = access_controls;
     }
 
     if (Object.keys(updateData).length !== 0) {

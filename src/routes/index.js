@@ -5,6 +5,7 @@ import {simpleParser} from "mailparser";
 import Busboy from "busboy";
 
 import {processEmail} from "../services/emailProcessor.js";
+import * as HeartbeatController from "../controllers/HeartbeatController.js";
 
 var router = express.Router();
 
@@ -19,6 +20,10 @@ router.get(
 router.post(
     "/incoming-sendgrid",
     function (req, res) {
+        if(!req.privileges.has("email:write")){
+            return res.status(401).json({"message": "Unauthorized"});
+        }
+
         const busboy = Busboy({"headers": req.headers});
         const startTime = new Date().getTime();
 
@@ -66,5 +71,27 @@ router.post(
         req.pipe(busboy);
     }
 );
+
+router.post('/heartbeat/:email_name', async (req, res) => {
+    if(!req.privileges.has("heartbeat:write")){
+        return res.status(401).json({"message": "Unauthorized"});
+    }
+
+    try {
+        await HeartbeatController.recordHeartbeat(req.params.email_name);
+        return res.status(201).json({"message": "ok"});
+    }
+    catch (e) {
+        if (e instanceof Error && e.message?.startsWith("Email name")) {
+            return res.status(404).json({"message": e.message});
+        }
+
+        logger.error(
+            "Error recording web heartbeat.",
+            e
+        );
+        return res.status(500).json({"message": "Internal Server Error"});
+    }
+})
 
 export default router;

@@ -11,7 +11,7 @@ import {expressMiddleware} from "@apollo/server/express4";
 import {typeDefs} from "./gql/typedefs.js";
 import {resolvers} from "./gql/resolvers.js";
 
-import {tokenExists} from "./services/cachedTokenProvider.js";
+import {getTokenAccessControls} from "./services/cachedTokenProvider.js";
 
 import indexRouter from "./routes/index.js";
 
@@ -83,11 +83,13 @@ app.use(function handleAuth (req, res, next) {
         token = authQuery;
     }
 
-    tokenExists(token).
-        then((exists) => {
-            if (!exists) {
+    getTokenAccessControls(token).
+        then((controls) => {
+            if (controls.size === 0) {
                 return res.status(401).json({"message": "Unauthorized"});
             }
+
+            req.privileges = controls;
             next();
         }).
         catch((err) => {
@@ -107,7 +109,13 @@ app.use(
 
 app.use(
     "/graphql",
-    expressMiddleware(apolloServer)
+    expressMiddleware(apolloServer, {
+        "context": ({req}) => {
+            return {
+                "privileges": req.privileges
+            };
+        }
+    })
 );
 
 const port = process.env.PORT || "3000";

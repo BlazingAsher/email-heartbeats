@@ -24,6 +24,7 @@ export const typeDefs = `#graphql
     
     type ApiToken {
         id: String!
+        access_controls: String!
         description: String
     }
     
@@ -58,8 +59,8 @@ export const typeDefs = `#graphql
         createPushoverEndpoint(user_key: String!, timezone: String!, description: String): PushoverEndpoint
         updatePushoverEndpoint(id: Int!, user_key: String, timezone: String, description: String): PushoverEndpoint
         deleteEmailsOlderThan(timestamp: Int!): Int
-        createApiToken(description: String): ApiToken
-        updateApiToken(id: String!, description: String): ApiToken
+        createApiToken(access_controls: String!, description: String): ApiToken
+        updateApiToken(id: String!, access_controls: String, description: String): ApiToken
         deleteApiToken(id: String!): Boolean
     }
 `;
