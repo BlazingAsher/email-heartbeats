@@ -62,8 +62,10 @@ async function staleHeartbeatNotifier () {
         }
 
         await sendPushoverMessage(
+            process.env.PUSHOVER_TOKEN,
             endpoint.user_key,
-            notificationMessage
+            notificationMessage,
+            "Stale Heartbeats"
         );
         await HeartbeatController.recordHeartbeatStaleNotifications(heartbeats.map((h) => h.email_name));
     }

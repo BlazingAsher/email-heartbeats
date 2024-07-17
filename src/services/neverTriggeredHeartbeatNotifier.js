@@ -37,8 +37,10 @@ async function neverTriggeredHeartbeatNotifier () {
         }
 
         await sendPushoverMessage(
+            process.env.PUSHOVER_TOKEN,
             endpoint.user_key,
-            notificationMessage
+            notificationMessage,
+            "Never Triggered Heartbeats"
         );
     }
 }
