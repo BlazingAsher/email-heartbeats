@@ -19,6 +19,8 @@ function formatSeconds (seconds) {
     const minutes = Math.floor(seconds / 60);
     seconds -= minutes * 60;
 
+    seconds = Math.round(seconds);
+
     return `${days}d ${hours}h ${minutes}m ${seconds}s`;
 }
 
@@ -67,7 +69,7 @@ async function staleHeartbeatNotifier () {
             notificationMessage,
             "Stale Heartbeats"
         );
-        await HeartbeatController.recordHeartbeatStaleNotifications(heartbeats.map((h) => h.email_name));
+        await HeartbeatController.recordHeartbeatStaleNotifications(heartbeats.map((h) => h.email_name), startTime);
     }
 }
 
