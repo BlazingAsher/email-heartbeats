@@ -25,7 +25,7 @@ function formatSeconds (seconds) {
 }
 
 async function staleHeartbeatNotifier () {
-    const startTime = Date.now() / 1000;
+    const startTime = Math.floor(Date.now() / 1000);
     const staleHeartbeats = await HeartbeatController.getStaleHeartbeats();
 
     const notificationsByEndpoint = {};
