@@ -33,7 +33,7 @@ async function staleHeartbeatNotifier () {
     for (const heartbeat of staleHeartbeats) {
         const lastStaleNotify = heartbeat.last_stale_notify ?? 0;
 
-        if (lastStaleNotify < heartbeat.last_heartbeat || startTime - lastStaleNotify > 86400) {
+        if (lastStaleNotify < heartbeat.last_heartbeat || startTime - lastStaleNotify >= 86400) {
             if (!notificationsByEndpoint[heartbeat.endpoint_id]) {
                 notificationsByEndpoint[heartbeat.endpoint_id] = [];
             }
