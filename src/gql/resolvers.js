@@ -179,6 +179,9 @@ export const resolvers = {
     "Heartbeat": {
         "endpoint": async (parent) => {
             return PushoverController.getEndpoint(parent.endpoint_id);
+        },
+        "matching_criteria": (parent) => {
+            return JSON.stringify(parent.matching_criteria);
         }
     },
     "Email": {
