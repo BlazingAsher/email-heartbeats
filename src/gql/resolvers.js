@@ -90,7 +90,8 @@ export const resolvers = {
                 args.max_heartbeat_interval_seconds,
                 args.matching_criteria,
                 args.endpoint_id,
-                args.forwarding_token
+                args.forwarding_token,
+                args.description
             );
             return HeartbeatController.getHeartbeat(args.email_name);
         },
@@ -111,7 +112,8 @@ export const resolvers = {
                 args.max_heartbeat_interval_seconds,
                 args.matching_criteria,
                 args.endpoint_id,
-                args.forwarding_token
+                args.forwarding_token,
+                args.description
             );
             return HeartbeatController.getHeartbeat(args.email_name);
         },
