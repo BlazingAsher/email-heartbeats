@@ -56,7 +56,7 @@ export function validateHeartbeatMatchingCriteria (matching_criteria) {
     return true;
 }
 
-export async function createHeartbeat (email_name, maximum_interval_seconds, matching_criteria, endpoint_id, forwarding_token, description) {
+export async function createHeartbeat (email_name, maximum_interval_seconds, matching_criteria, endpoint_id, forwarding_token, description, disabled_until) {
     validateHeartbeatName(email_name);
     validateHeartbeatMatchingCriteria(matching_criteria);
 
@@ -66,13 +66,14 @@ export async function createHeartbeat (email_name, maximum_interval_seconds, mat
         matching_criteria,
         endpoint_id,
         forwarding_token,
-        description
+        description,
+        disabled_until
     });
 
     return getHeartbeat(email_name);
 }
 
-export async function updateHeartbeat (email_name, maximum_interval_seconds, matching_criteria, endpoint_id, forwarding_token, description) {
+export async function updateHeartbeat (email_name, maximum_interval_seconds, matching_criteria, endpoint_id, forwarding_token, description, disabled_until) {
     let updater = {};
 
     if (maximum_interval_seconds !== undefined) {
@@ -94,6 +95,10 @@ export async function updateHeartbeat (email_name, maximum_interval_seconds, mat
 
     if (description !== undefined) {
         updater.description = description;
+    }
+
+    if (disabled_until !== undefined) {
+        updater.disabled_until = disabled_until;
     }
 
     if (Object.keys(updater).length !== 0) {
@@ -138,6 +143,10 @@ export async function getStaleHeartbeats () {
     const nowTime = Math.floor(new Date().getTime() / 1000);
 
     for (const row of allHeartbeats) {
+        if (row.disabled_until !== undefined && row.disabled_until !== null && row.disabled_until > nowTime) {
+            continue;
+        }
+
         if (nowTime - row.last_heartbeat > row.max_heartbeat_interval_seconds) {
             staleHeartbeats.push(row);
         }
@@ -151,7 +160,18 @@ export async function getAllHeartbeatsByEndpointId (endpoint_id) {
 }
 
 export async function getNeverTriggeredHeartbeats () {
-    return db("heartbeats").where({"last_heartbeat": null});
+    const nowTime = Math.floor(new Date().getTime() / 1000);
+    return db("heartbeats").where(
+        {"last_heartbeat": null}
+    ).
+        andWhere((qb) => {
+            qb.whereNull("disabled_until").
+                orWhere(
+                    "disabled_until",
+                    "<=",
+                    nowTime
+                );
+        });
 }
 
 export async function recordHeartbeat (email_name) {
