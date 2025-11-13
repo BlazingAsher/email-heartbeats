@@ -19,12 +19,22 @@ export function getEmail (id) {
         first();
 }
 
-export function getEmails (newer_than, limit) {
-    return db("emails").where(
+export function getEmails (newer_than, limit, email_name) {
+    let query = db("emails").where(
         "received_time",
         ">",
         newer_than
-    ).
+    );
+
+    if (email_name !== undefined) {
+        query = query.andWhere(
+            "email_name",
+            "=",
+            email_name
+        );
+    }
+
+    return query.
         orderBy(
             "received_time",
             "desc"

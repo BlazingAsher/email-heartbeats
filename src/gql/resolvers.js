@@ -68,7 +68,8 @@ export const resolvers = {
 
             return EmailController.getEmails(
                 args.newer_than ?? 0,
-                args.limit
+                args.limit,
+                args.email_name
             );
         },
         "email": async (parent, args, context) => {

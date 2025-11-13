@@ -48,7 +48,7 @@ export const typeDefs = `#graphql
         pushoverEndpoint(id: Int!): PushoverEndpoint
         apiTokens: [ApiToken]
         apiToken(id: String!): ApiToken
-        emails(limit: Int!, newer_than: Int): [Email]
+        emails(limit: Int!, newer_than: Int, email_name: String): [Email]
         email(id: Int!): Email
     }
     
