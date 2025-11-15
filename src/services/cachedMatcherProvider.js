@@ -74,7 +74,7 @@ export async function getMatcher (email_name) {
         }
     }
 
-    for (const body_matcher of matcher.from ?? []) {
+    for (const body_matcher of matcher.body ?? []) {
         const match = body_matcher.match(/^\/(.*?)\/([gimsuy]*)$/);
         if (!match) {
             logger.warn(`Heartbeat ${email_name} has an invalid body matcher: ${body_matcher}`);
