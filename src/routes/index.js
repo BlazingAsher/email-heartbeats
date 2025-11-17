@@ -78,38 +78,6 @@ router.post('/heartbeat/:email_name', async (req, res) => {
     }
 
     try {
-        const subject = (req.body && typeof req.body.subject !== "undefined") ? req.body.subject : "(no subject)";
-        const body = req.body ? req.body.body : undefined;
-
-        await processHeartbeatContent(
-            req.params.email_name,
-            "(unknown sender)",
-            subject,
-            body,
-            req.params.email_name,
-            true
-        );
-        return res.status(201).json({"message": "ok"});
-    }
-    catch (e) {
-        if (e instanceof Error && e.message?.match(/Email name .* does not exist/)) {
-            return res.status(404).json({"message": e.message});
-        }
-
-        logger.error(
-            "Error recording web heartbeat.",
-            e
-        );
-        return res.status(500).json({"message": "Internal Server Error"});
-    }
-})
-
-router.post('/heartbeat/:email_name', async (req, res) => {
-    if(!req.privileges.has("heartbeat:write")){
-        return res.status(401).json({"message": "Unauthorized"});
-    }
-
-    try {
         await HeartbeatController.recordHeartbeat(req.params.email_name);
         return res.status(201).json({"message": "ok"});
     }
@@ -124,8 +92,7 @@ router.post('/heartbeat/:email_name', async (req, res) => {
         );
         return res.status(500).json({"message": "Internal Server Error"});
     }
-})
-
+});
 
 router.post('/heartbeat/:email_name/message', async (req, res) => {
     if(!req.privileges.has("heartbeat:write")){
@@ -157,6 +124,6 @@ router.post('/heartbeat/:email_name/message', async (req, res) => {
         );
         return res.status(500).json({"message": "Internal Server Error"});
     }
-})
+});
 
 export default router;
