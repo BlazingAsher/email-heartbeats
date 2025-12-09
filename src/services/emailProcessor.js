@@ -1,5 +1,5 @@
 import {getMatcher} from "./cachedMatcherProvider.js";
-import {recordHeartbeat} from "../controllers/HeartbeatController.js";
+import {recordHeartbeat, getHeartbeat} from "../controllers/HeartbeatController.js";
 import {getForwardingInformation} from "./cachedForwardingInformationProvider.js";
 import logger from "../logger.js";
 import {sendPushoverMessage} from "../connectors/PushoverConnector.js";
@@ -9,6 +9,7 @@ export async function processHeartbeatContent (email_name, from, subject, body, 
     const normalizedSubject = subject ?? "(no subject)";
 
     const matcher = await getMatcher(email_name);
+    const heartbeat = await getHeartbeat(email_name);
 
     try {
         if (body !== undefined) {
@@ -66,11 +67,16 @@ export async function processHeartbeatContent (email_name, from, subject, body, 
         }
     }
 
+    
+
     if (matched) {
         await recordHeartbeat(email_name);
-    } else if (body !== undefined) {
-        // send to pushover
-        logger.info("No matches, forwarding to Pushover.");
+    }
+
+    const alwaysForward = !!(heartbeat?.always_forward);
+
+    if (body !== undefined && (!matched || alwaysForward)) {
+        logger.info((matched ? "Always forward enabled" : "No matches") + ", forwarding to Pushover.");
         const forwardingInfo = await getForwardingInformation(email_name);
         await sendPushoverMessage(
             forwardingInfo.forwarding_token,
@@ -78,7 +84,7 @@ export async function processHeartbeatContent (email_name, from, subject, body, 
             body,
             normalizedSubject
         );
-    } else {
+    } else if (!matched) {
         logger.info("No matches, no body, skipping.");
     }
 }

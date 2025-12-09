@@ -93,6 +93,7 @@ export const resolvers = {
                 args.endpoint_id,
                 args.forwarding_token,
                 args.description,
+                args.always_forward,
                 args.disabled_until
             );
             return HeartbeatController.getHeartbeat(args.email_name);
@@ -116,6 +117,7 @@ export const resolvers = {
                 args.endpoint_id,
                 args.forwarding_token,
                 args.description,
+                args.always_forward,
                 args.disabled_until
             );
             return HeartbeatController.getHeartbeat(args.email_name);

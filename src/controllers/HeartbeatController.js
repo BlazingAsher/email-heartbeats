@@ -56,7 +56,7 @@ export function validateHeartbeatMatchingCriteria (matching_criteria) {
     return true;
 }
 
-export async function createHeartbeat (email_name, maximum_interval_seconds, matching_criteria, endpoint_id, forwarding_token, description, disabled_until) {
+export async function createHeartbeat (email_name, maximum_interval_seconds, matching_criteria, endpoint_id, forwarding_token, description, always_forward, disabled_until) {
     validateHeartbeatName(email_name);
     validateHeartbeatMatchingCriteria(matching_criteria);
 
@@ -67,13 +67,14 @@ export async function createHeartbeat (email_name, maximum_interval_seconds, mat
         endpoint_id,
         forwarding_token,
         description,
+        "always_forward": always_forward ?? false,
         disabled_until
     });
 
     return getHeartbeat(email_name);
 }
 
-export async function updateHeartbeat (email_name, maximum_interval_seconds, matching_criteria, endpoint_id, forwarding_token, description, disabled_until) {
+export async function updateHeartbeat (email_name, maximum_interval_seconds, matching_criteria, endpoint_id, forwarding_token, description, always_forward, disabled_until) {
     let updater = {};
 
     if (maximum_interval_seconds !== undefined) {
@@ -95,6 +96,10 @@ export async function updateHeartbeat (email_name, maximum_interval_seconds, mat
 
     if (description !== undefined) {
         updater.description = description;
+    }
+
+    if (always_forward !== undefined) {
+        updater.always_forward = always_forward;
     }
 
     if (disabled_until !== undefined) {
