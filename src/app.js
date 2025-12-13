@@ -12,6 +12,8 @@ import {typeDefs} from "./gql/typedefs.js";
 import {resolvers} from "./gql/resolvers.js";
 
 import {getTokenAccessControls} from "./services/cachedTokenProvider.js";
+import {verifyGoogleToken} from "./services/googleAuthVerifier.js";
+import {ALL_GRANTS} from "./constants.js";
 
 import indexRouter from "./routes/index.js";
 
@@ -62,7 +64,7 @@ app.use(morgan(
         }
     }
 ));
-app.use(function handleAuth (req, res, next) {
+app.use(async function handleAuth (req, res, next) {
     const authHeader = req.headers.authorization;
     const authQuery = req.query.token;
 
@@ -80,28 +82,35 @@ app.use(function handleAuth (req, res, next) {
         if (!authData || authData.length !== 2 || authData[0] !== "Bearer") {
             return res.status(401).json({"message": "Unauthorized"});
         }
-
         token = authData[1];
     } else {
         token = authQuery;
     }
 
-    getTokenAccessControls(token).
-        then((controls) => {
-            if (controls.size === 0) {
-                return res.status(401).json({"message": "Unauthorized"});
-            }
+    try {
+        const controls = await getTokenAccessControls(token);
 
+        if (controls && controls.size > 0) {
             req.privileges = controls;
-            next();
-        }).
-        catch((err) => {
-            logger.error(
-                "Unable to validate token.",
-                err
-            );
-            return res.status(500).json({"message": "Internal Server Error"});
-        });
+            return next();
+        }
+    } catch (err) {
+        logger.debug(
+            "Legacy auth failed, attempting Google fallback",
+            err
+        );
+    }
+
+    const googleUser = await verifyGoogleToken(token);
+
+    if (googleUser) {
+        req.user = googleUser;
+        // Assume Google tokens have full access
+        req.privileges = new Set(ALL_GRANTS);
+        return next();
+    }
+
+    return res.status(401).json({"message": "Unauthorized"});
 });
 app.use(express.json());
 

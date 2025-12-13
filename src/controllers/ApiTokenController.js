@@ -2,12 +2,13 @@ import short from "short-uuid";
 import {EventEmitter} from "events";
 
 import {db} from "../services/database.js";
+import {ALL_GRANTS} from "../constants.js";
 
 export const ApiTokenUpdateEventEmitter = new EventEmitter();
 
 function validateAccessControls(access_controls) {
     for (const access_control of access_controls) {
-        if (!["read", "write", "email:write", "heartbeat:write"].includes(access_control)) {
+        if (!ALL_GRANTS.includes(access_control)) {
             throw new Error("Invalid access control: " + access_control);
         }
     }
