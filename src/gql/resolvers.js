@@ -188,7 +188,10 @@ export const resolvers = {
             return PushoverController.getEndpoint(parent.endpoint_id);
         },
         "matching_criteria": (parent) => {
-            return JSON.stringify(parent.matching_criteria);
+            // SQLite returns json columns as strings; Postgres returns parsed objects
+            return typeof parent.matching_criteria === "string"
+                ? parent.matching_criteria
+                : JSON.stringify(parent.matching_criteria);
         },
         "is_disabled": (parent) => HeartbeatController.isHeartbeatDisabled(parent),
     },
