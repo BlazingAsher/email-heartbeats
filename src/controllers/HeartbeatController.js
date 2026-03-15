@@ -3,6 +3,15 @@ import {EventEmitter} from "events";
 
 export const HeartbeatUpdateEventEmitter = new EventEmitter();
 
+export function isHeartbeatDisabled(row) {
+    if (row.disabled_until === 0) return true; // indefinitely disabled
+    if (row.disabled_until !== null && row.disabled_until !== undefined) {
+        const now = Math.floor(Date.now() / 1000);
+        return row.disabled_until > now;
+    }
+    return false;
+}
+
 export function validateHeartbeatName (name) {
     if (name.length < 3) {
         throw new Error("Heartbeat name must be at least 3 characters long");
@@ -148,7 +157,7 @@ export async function getStaleHeartbeats () {
     const nowTime = Math.floor(new Date().getTime() / 1000);
 
     for (const row of allHeartbeats) {
-        if (row.disabled_until !== undefined && row.disabled_until !== null && row.disabled_until > nowTime) {
+        if (isHeartbeatDisabled(row)) {
             continue;
         }
 
@@ -166,16 +175,14 @@ export async function getAllHeartbeatsByEndpointId (endpoint_id) {
 
 export async function getNeverTriggeredHeartbeats () {
     const nowTime = Math.floor(new Date().getTime() / 1000);
-    return db("heartbeats").where(
-        {"last_heartbeat": null}
-    ).
-        andWhere((qb) => {
-            qb.whereNull("disabled_until").
-                orWhere(
-                    "disabled_until",
-                    "<=",
-                    nowTime
-                );
+    return db("heartbeats")
+        .where({"last_heartbeat": null})
+        .andWhere((qb) => {
+            qb.whereNull("disabled_until")
+              .orWhere((inner) => {
+                  inner.where("disabled_until", ">", 0)
+                       .andWhere("disabled_until", "<=", nowTime);
+              });
         });
 }
 

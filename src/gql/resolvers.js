@@ -189,7 +189,8 @@ export const resolvers = {
         },
         "matching_criteria": (parent) => {
             return JSON.stringify(parent.matching_criteria);
-        }
+        },
+        "is_disabled": (parent) => HeartbeatController.isHeartbeatDisabled(parent),
     },
     "Email": {
         "heartbeat": async (parent) => {

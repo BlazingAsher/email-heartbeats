@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node ./src/app.js",
+    "dev": "nodemon ./src/app.js",
     "lint": "eslint ./src/**/*.js ./src/*.js ./migrations/*.js",
     "migrate": "knex migrate:latest",
     "migrate:production": "knex migrate:latest --env production",
@@ -15,6 +16,7 @@
     "@apollo/server": "^4.10.4",
     "axios": "^1.7.2",
     "busboy": "^1.6.0",
+    "cors": "^2.8.6",
     "dayjs": "^1.11.11",
     "debug": "~2.6.9",
     "dotenv": "^16.4.5",
@@ -35,6 +37,7 @@
     "@stylistic/eslint-plugin-js": "^2.1.0",
     "better-sqlite3": "^11.0.0",
     "eslint": "^9.4.0",
-    "globals": "^15.4.0"
+    "globals": "^15.4.0",
+    "nodemon": "^3.1.14"
   }
 }

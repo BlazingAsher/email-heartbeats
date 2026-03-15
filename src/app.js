@@ -4,6 +4,7 @@ import * as http from "http";
 import express from "express";
 import morgan from "morgan";
 import logger from "./logger.js";
+import cors from "cors";
 
 import {ApolloServer} from "@apollo/server";
 import {expressMiddleware} from "@apollo/server/express4";
@@ -64,6 +65,9 @@ app.use(morgan(
         }
     }
 ));
+
+app.use(cors());
+
 app.use(async function handleAuth (req, res, next) {
     const authHeader = req.headers.authorization;
     const authQuery = req.query.token;

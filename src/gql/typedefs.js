@@ -10,6 +10,7 @@ export const typeDefs = `#graphql
         max_heartbeat_interval_seconds: Int!
         last_stale_notify: Int
         disabled_until: Int
+        is_disabled: Boolean!
         always_forward: Boolean!
         matching_criteria: String!
         endpoint: PushoverEndpoint,
