@@ -4,12 +4,12 @@ import {EventEmitter} from "events";
 export const HeartbeatUpdateEventEmitter = new EventEmitter();
 
 export function isHeartbeatDisabled(row) {
-    if (row.disabled_until === 0) return true; // indefinitely disabled
-    if (row.disabled_until !== null && row.disabled_until !== undefined) {
-        const now = Math.floor(Date.now() / 1000);
-        return row.disabled_until > now;
-    }
-    return false;
+    if (row.disabled_until === null || row.disabled_until === undefined) return false;
+    // need to convert to number because pg bigint returns a string
+    const val = Number(row.disabled_until); // this is fine because number is 2^53, which is more than enough
+    if (val === 0) return true; // indefinitely disabled
+    const now = Math.floor(Date.now() / 1000);
+    return val > now;
 }
 
 export function validateHeartbeatName (name) {
