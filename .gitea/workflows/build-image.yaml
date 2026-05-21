@@ -1,0 +1,20 @@
+name: Build and Push Image
+on: [push]
+jobs:
+  Build-And-Push-Image:
+    name: Build and Push Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Buildah Action
+        id: build-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ghcr.io/blazingasher/email-heartbeats
+          tags: latest
+          containerfiles: |
+            ./Dockerfile
+      - name: Buildah Push
+        run: |
+          for entry in ${{ steps.build-image.outputs.tags }}; do
+            buildah push --creds ${{ vars.GHCR_USERNAME }}:${{ secrets.GHCR_TOKEN }} ${{ steps.build-image.outputs.image }}:$entry
