@@ -18,3 +18,4 @@ jobs:
         run: |
           for entry in ${{ steps.build-image.outputs.tags }}; do
             buildah push --creds ${{ vars.GHCR_USERNAME }}:${{ secrets.GHCR_TOKEN }} ${{ steps.build-image.outputs.image }}:$entry
+          done
