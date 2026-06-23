@@ -12,10 +12,12 @@ jobs:
         with:
           image: ghcr.io/blazingasher/email-heartbeats
           tags: latest
+          extra-args: |
+            --storage-driver vfs
           containerfiles: |
             ./Dockerfile
       - name: Buildah Push
         run: |
           for entry in ${{ steps.build-image.outputs.tags }}; do
-            buildah push --creds ${{ vars.GHCR_USERNAME }}:${{ secrets.GHCR_TOKEN }} ${{ steps.build-image.outputs.image }}:$entry
+            buildah push --storage-driver vfs --creds ${{ vars.GHCR_USERNAME }}:${{ secrets.GHCR_TOKEN }} ${{ steps.build-image.outputs.image }}:$entry
           done
