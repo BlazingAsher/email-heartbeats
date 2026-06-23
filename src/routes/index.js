@@ -26,12 +26,13 @@ router.post(
 
         const busboy = Busboy({"headers": req.headers});
         const startTime = new Date().getTime();
+        let emailProcessingPromise = null;
 
         busboy.on(
             "field",
             function (name, value) {
                 if (name === "email") {
-                    simpleParser(
+                    emailProcessingPromise = simpleParser(
                         value,
                         {
                             "skipTextToHtml": true,
@@ -39,23 +40,10 @@ router.post(
                             "skipTextLinks": true
                         }
                     ).
-                        then((mail) => {
-                            processEmail(mail).then(() => {
-                                const processingTime = new Date().getTime() - startTime;
-                                logger.info(`Email processed in ${processingTime}ms`);
-                            }).
-                                catch((err) => {
-                                    logger.error(
-                                        "Error processing email from Sendgrid.",
-                                        err
-                                    );
-                                });
-                        }).
-                        catch((err) => {
-                            logger.error(
-                                "Error parsing email from Sendgrid.",
-                                err
-                            );
+                        then((mail) => processEmail(mail)).
+                        then(() => {
+                            const processingTime = new Date().getTime() - startTime;
+                            logger.info(`Email processed in ${processingTime}ms`);
                         });
                 }
             }
@@ -63,7 +51,18 @@ router.post(
 
         busboy.on(
             "finish",
-            function () {
+            async function () {
+                if (emailProcessingPromise) {
+                    try {
+                        await emailProcessingPromise;
+                    } catch (err) {
+                        logger.error(
+                            "Error processing email from Sendgrid.",
+                            err
+                        );
+                        return res.status(500).json({"message": "Internal Server Error"});
+                    }
+                }
                 return res.json({"message": "ok"});
             }
         );
